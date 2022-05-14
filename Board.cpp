@@ -19,6 +19,8 @@ class BoardImpl
     bool allShipsDestroyed() const;
 
   private:
+    char m_Board [MAXROWS][MAXCOLS];
+    bool m_blocked[MAXROWS][MAXCOLS];
       // TODO:  Decide what private members you need.  Here's one that's likely
       //        to be useful:
     const Game& m_game;
@@ -27,11 +29,17 @@ class BoardImpl
 BoardImpl::BoardImpl(const Game& g)
  : m_game(g)
 {
-    // This compiles, but may not be correct
+    clear(); // initializes m_Board to array of '.'
+    unblock(); // initializes m_blocked to array of false
 }
 
 void BoardImpl::clear()
 {
+    for(int i = 0; i < m_game.rows(); i++){
+        for(int j = 0; j < m_game.cols(); j++){
+            m_Board[i][j] = '.';
+        }
+    }
     // This compiles, but may not be correct
 }
 
@@ -42,7 +50,7 @@ void BoardImpl::block()
         for (int c = 0; c < m_game.cols(); c++)
             if (randInt(2) == 0)
             {
-                ; // TODO:  Replace this with code to block cell (r,c)
+                m_blocked[r][c] = true;
             }
 }
 
@@ -51,7 +59,7 @@ void BoardImpl::unblock()
     for (int r = 0; r < m_game.rows(); r++)
         for (int c = 0; c < m_game.cols(); c++)
         {
-            ; // TODO:  Replace this with code to unblock cell (r,c) if blocked
+            m_blocked[r][c] = false;
         }
 }
 
