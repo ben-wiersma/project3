@@ -23,6 +23,17 @@ class GameImpl
     char shipSymbol(int shipId) const;
     string shipName(int shipId) const;
     Player* play(Player* p1, Player* p2, Board& b1, Board& b2, bool shouldPause);
+  private:
+    int m_rows;
+    int m_cols;
+    struct Ship
+    {
+        int m_len;
+        char m_sym;
+        string m_name;
+    };
+    int m_numShips;
+    Ship m_ships [5];
 };
 
 void waitForEnter()
@@ -32,18 +43,19 @@ void waitForEnter()
 }
 
 GameImpl::GameImpl(int nRows, int nCols)
+  : m_rows(nRows), m_cols(nCols), m_numShips(0)
 {
     // This compiles but may not be correct
 }
 
 int GameImpl::rows() const
 {
-    return -1;  // This compiles but may not be correct
+    return m_rows;  // This compiles but may not be correct
 }
 
 int GameImpl::cols() const
 {
-    return -1;  // This compiles but may not be correct
+    return m_cols;  // This compiles but may not be correct
 }
 
 bool GameImpl::isValid(Point p) const
@@ -58,27 +70,33 @@ Point GameImpl::randomPoint() const
 
 bool GameImpl::addShip(int length, char symbol, string name)
 {
-    return false;  // This compiles but may not be correct
+    Ship ss;
+    ss.m_len = length;
+    ss.m_sym = symbol;
+    ss.m_name = name;
+    m_ships[m_numShips] = ss;
+    m_numShips++;
+    return true;  // This compiles but may not be correct
 }
 
 int GameImpl::nShips() const
 {
-    return -1;  // This compiles but may not be correct
+    return m_numShips;  // This compiles but may not be correct
 }
 
 int GameImpl::shipLength(int shipId) const
 {
-    return -1;  // This compiles but may not be correct
+    return m_ships[shipId].m_len;  // This compiles but may not be correct
 }
 
 char GameImpl::shipSymbol(int shipId) const
 {
-    return '?';  // This compiles but may not be correct
+    return m_ships[shipId].m_sym;  // This compiles but may not be correct
 }
 
 string GameImpl::shipName(int shipId) const
 {
-    return "";  // This compiles but may not be correct
+    return m_ships[shipId].m_name;  // This compiles but may not be correct
 }
 
 Player* GameImpl::play(Player* p1, Player* p2, Board& b1, Board& b2, bool shouldPause)
