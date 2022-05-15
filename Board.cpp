@@ -19,7 +19,7 @@ class BoardImpl
     bool allShipsDestroyed() const;
 
   private:
-    char m_Board [MAXROWS][MAXCOLS];
+    char m_board [MAXROWS][MAXCOLS];
     bool m_blocked[MAXROWS][MAXCOLS];
       // TODO:  Decide what private members you need.  Here's one that's likely
       //        to be useful:
@@ -37,7 +37,7 @@ void BoardImpl::clear()
 {
     for(int i = 0; i < m_game.rows(); i++){
         for(int j = 0; j < m_game.cols(); j++){
-            m_Board[i][j] = '.';
+            m_board[i][j] = '.';
         }
     }
     // This compiles, but may not be correct
@@ -84,7 +84,12 @@ void BoardImpl::display(bool shotsOnly) const
     for(int r = 0; r < m_game.rows(); r++){
         cout << r << " ";
         for(int c = 0; c < m_game.cols(); c++){
-            cout << m_Board[r][c];
+            if(shotsOnly && !(m_board[r][c] == '.' || m_board[r][c] == 'o' || m_board[r][c] == 'X')){
+                cout << '.';
+            }
+            else {
+                cout << m_board[r][c];
+            }
         }
         cout << endl;
     }
