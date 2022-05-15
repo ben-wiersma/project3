@@ -106,19 +106,49 @@ bool BoardImpl::placeShip(Point topOrLeft, int shipId, Direction dir)
 
 bool BoardImpl::unplaceShip(Point topOrLeft, int shipId, Direction dir)
 {
-    return false; // This compiles, but may not be correct
+    if(shipId < 0 || shipId >= m_game.nShips()) return false; // check if shipId is valid
+    
+    switch (dir) {
+        case 0: // horizontal case
+            
+            for(int c = topOrLeft.c; c < m_game.shipLength(shipId); c++){
+                if(m_board[topOrLeft.r][c] == m_game.shipSymbol(shipId)){
+                    m_board[topOrLeft.r][c] = '.';
+                }
+                else {
+                    return false;
+                }
+            }
+            break;
+        case 1: // vertical case
+            
+            for(int r = topOrLeft.r; r < m_game.shipLength(shipId); r++){
+                if(m_board[r][topOrLeft.c] == m_game.shipSymbol(shipId)){
+                    m_board[r][topOrLeft.c] = '.';
+                }
+                else {
+                    return false;
+                }
+            }
+            break;
+        default:
+            assert(false); // catch in dir
+            break;
+    }
+    
+    return true; // This compiles, but may not be correct
 }
 
 void BoardImpl::display(bool shotsOnly) const
 {
     cout << "  ";
-    for(int c = 0; c < m_game.cols(); c++){
+    for(int c = 0; c < m_game.cols(); c++){ // print coloumn numbers
         cout << c;
     }
     cout << endl;
 
     for(int r = 0; r < m_game.rows(); r++){
-        cout << r << " ";
+        cout << r << " "; // print row numbers
         for(int c = 0; c < m_game.cols(); c++){
             if(shotsOnly && !(m_board[r][c] == '.' || m_board[r][c] == 'o' || m_board[r][c] == 'X')){
                 cout << '.';
