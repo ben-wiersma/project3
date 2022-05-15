@@ -75,7 +75,19 @@ bool BoardImpl::unplaceShip(Point topOrLeft, int shipId, Direction dir)
 
 void BoardImpl::display(bool shotsOnly) const
 {
-    // This compiles, but may not be correct
+    cout << "  ";
+    for(int c = 0; c < m_game.cols(); c++){
+        cout << c;
+    }
+    cout << endl;
+
+    for(int r = 0; r < m_game.rows(); r++){
+        cout << r << " ";
+        for(int c = 0; c < m_game.cols(); c++){
+            cout << m_Board[r][c];
+        }
+        cout << endl;
+    }
 }
 
 bool BoardImpl::attack(Point p, bool& shotHit, bool& shipDestroyed, int& shipId)
