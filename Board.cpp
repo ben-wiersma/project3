@@ -65,7 +65,43 @@ void BoardImpl::unblock()
 
 bool BoardImpl::placeShip(Point topOrLeft, int shipId, Direction dir)
 {
-    return false; // This compiles, but may not be correct
+    if(shipId < 0 || shipId >= m_game.nShips()) return false; // check if shipId is valid
+    if(!m_game.isValid(topOrLeft)) return false; // check if insert point is valid
+    
+    for (int r = 0; r < m_game.rows(); r++) { // check if shipId has been placed already
+        for (int c = 0; c < m_game.cols(); c++)
+        {
+            if(m_board[r][c] == m_game.shipSymbol(shipId)) return false;
+        }
+    }
+    
+    switch (dir) {
+        case 0: // horizontal case
+            if(topOrLeft.c + m_game.shipLength(shipId) >= m_game.cols()) return false; // check if ship fits horizontally
+            
+            for(int c = topOrLeft.c; c < m_game.shipLength(shipId); c++){
+                if(m_blocked[topOrLeft.r][c] || m_board[topOrLeft.r][c] != '.') return false; // check if position is blocked or already has ship
+                else {
+                    m_board[topOrLeft.r][c] = m_game.shipSymbol(shipId); // add ship to board
+                }
+            }
+            break;
+        case 1: // vertical case
+            if(topOrLeft.r + m_game.shipLength(shipId) >= m_game.rows()) return false; // check if ship fits vertically
+            
+            for(int r = topOrLeft.r; r < m_game.shipLength(shipId); r++){
+                if(m_blocked[r][topOrLeft.c] || m_board[r][topOrLeft.c] != '.') return false; // check if position is blocked or already has ship
+                else {
+                    m_board[r][topOrLeft.c] = m_game.shipSymbol(shipId); // add ship to board
+                }
+            }
+            break;
+        default:
+            assert(false); // catch in dir
+            break;
+    }
+    
+    return true;
 }
 
 bool BoardImpl::unplaceShip(Point topOrLeft, int shipId, Direction dir)
