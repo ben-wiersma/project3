@@ -163,12 +163,60 @@ void BoardImpl::display(bool shotsOnly) const
 
 bool BoardImpl::attack(Point p, bool& shotHit, bool& shipDestroyed, int& shipId)
 {
-    return false; // This compiles, but may not be correct
+    if(!m_game.isValid(p)) return false; // check if attack point is invalid
+    
+    char attacked = m_board[p.r][p.c];
+    
+    if(attacked == 'o' || attacked == 'X') return false; // check if attack is called on previously attacked spot
+    
+    if(attacked ==  'A' || attacked == 'B' || attacked == 'D' || attacked == 'S' || attacked == 'P'){
+        
+        for (int i = 0; i < m_game.nShips(); i++) { // find which ship was attacked
+            if(attacked == m_game.shipSymbol(i)){
+                shipId = i;
+            }
+        }
+        
+        //assert(m_game.shipSymbol(shipId) == attacked);
+        
+        bool shipFound = false;
+        
+        for (int r = 0; r < m_game.rows(); r++){ // check if ship is destroyed
+            for (int c = 0; c < m_game.cols(); c++){
+                if (attacked == m_game.shipSymbol(shipId))
+                {
+                    shipFound = true;
+                }
+            }
+        }
+        
+        if(shipFound) shipDestroyed = false;
+        else shipDestroyed = true;
+        
+        attacked = 'X';
+        shotHit = true;
+    }
+    
+    else if(attacked == '.'){
+        attacked = 'o';
+        shotHit = false;
+        shipDestroyed = false;
+    }
+    
+    return true;
 }
 
 bool BoardImpl::allShipsDestroyed() const
 {
-    return false; // This compiles, but may not be correct
+    for (int r = 0; r < m_game.rows(); r++){
+        for (int c = 0; c < m_game.cols(); c++){
+            if (m_board[r][c] == 'A' || m_board[r][c] == 'B' || m_board[r][c] == 'D' || m_board[r][c] == 'S' || m_board[r][c] == 'P')
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 //******************** Board functions ********************************
