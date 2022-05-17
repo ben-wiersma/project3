@@ -32,8 +32,7 @@ class GameImpl
         char m_sym;
         string m_name;
     };
-    int m_numShips;
-    Ship m_ships [5];
+    vector<Ship> m_ships;
 };
 
 void waitForEnter()
@@ -43,7 +42,7 @@ void waitForEnter()
 }
 
 GameImpl::GameImpl(int nRows, int nCols)
-  : m_rows(nRows), m_cols(nCols), m_numShips(0)
+  : m_rows(nRows), m_cols(nCols)
 {
     // This compiles but may not be correct
 }
@@ -74,14 +73,13 @@ bool GameImpl::addShip(int length, char symbol, string name)
     ss.m_len = length;
     ss.m_sym = symbol;
     ss.m_name = name;
-    m_ships[m_numShips] = ss;
-    m_numShips++;
-    return true;  // This compiles but may not be correct
+    m_ships.push_back(ss);
+    return true;
 }
 
 int GameImpl::nShips() const
 {
-    return m_numShips;  // This compiles but may not be correct
+    return m_ships.size();  // This compiles but may not be correct
 }
 
 int GameImpl::shipLength(int shipId) const
