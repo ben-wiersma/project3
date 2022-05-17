@@ -194,12 +194,12 @@ bool BoardImpl::attack(Point p, bool& shotHit, bool& shipDestroyed, int& shipId)
         if(shipFound) shipDestroyed = false;
         else shipDestroyed = true;
         
-        attacked = 'X';
+        m_board[p.r][p.c] = 'X';
         shotHit = true;
     }
     
     else if(attacked == '.'){
-        attacked = 'o';
+        m_board[p.r][p.c] = 'o';
         shotHit = false;
         shipDestroyed = false;
     }
