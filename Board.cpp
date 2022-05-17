@@ -17,6 +17,7 @@ class BoardImpl
     void display(bool shotsOnly) const;
     bool attack(Point p, bool& shotHit, bool& shipDestroyed, int& shipId);
     bool allShipsDestroyed() const;
+    bool isShipChar(char chr) const; // check if a character is a current ship character
 
   private:
     char m_board [MAXROWS][MAXCOLS];
@@ -169,7 +170,7 @@ bool BoardImpl::attack(Point p, bool& shotHit, bool& shipDestroyed, int& shipId)
     
     if(attacked == 'o' || attacked == 'X') return false; // check if attack is called on previously attacked spot
     
-    if(attacked ==  'A' || attacked == 'B' || attacked == 'D' || attacked == 'S' || attacked == 'P'){
+    if(isShipChar(attacked)){
         
         for (int i = 0; i < m_game.nShips(); i++) { // find which ship was attacked
             if(attacked == m_game.shipSymbol(i)){
@@ -210,13 +211,22 @@ bool BoardImpl::allShipsDestroyed() const
 {
     for (int r = 0; r < m_game.rows(); r++){
         for (int c = 0; c < m_game.cols(); c++){
-            if (m_board[r][c] == 'A' || m_board[r][c] == 'B' || m_board[r][c] == 'D' || m_board[r][c] == 'S' || m_board[r][c] == 'P')
+            if (isShipChar(m_board[r][c]))
             {
                 return false;
             }
         }
     }
     return true;
+}
+
+bool BoardImpl::isShipChar(char chr) const {
+    for(int i = 0; i < m_game.nShips(); i++){
+        if(chr == m_game.shipSymbol(i)){
+            return true;
+        }
+    }
+    return false;
 }
 
 //******************** Board functions ********************************
