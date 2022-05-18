@@ -84,21 +84,82 @@ int GameImpl::nShips() const
 
 int GameImpl::shipLength(int shipId) const
 {
-    return m_ships[shipId].m_len;  // This compiles but may not be correct
+    return m_ships.at(shipId).m_len;  // This compiles but may not be correct
 }
 
 char GameImpl::shipSymbol(int shipId) const
 {
-    return m_ships[shipId].m_sym;  // This compiles but may not be correct
+    return m_ships.at(shipId).m_sym;  // This compiles but may not be correct
 }
 
 string GameImpl::shipName(int shipId) const
 {
-    return m_ships[shipId].m_name;  // This compiles but may not be correct
+    return m_ships.at(shipId).m_name;  // This compiles but may not be correct
 }
 
 Player* GameImpl::play(Player* p1, Player* p2, Board& b1, Board& b2, bool shouldPause)
 {
+    
+    if(!p1->placeShips(b1) || !p2->placeShips(b2)){
+        cerr << "Error in placing ships" << endl;
+        return nullptr;
+    }
+    
+    Player* curPlyr = p1;
+    Player* otherPlyr = p2;
+    Board* curBord = &b2;
+    
+    while (!b1.allShipsDestroyed() && !b2.allShipsDestroyed()) {
+        
+        bool hit = false;
+        bool destroyed = false;
+        int id = -1;
+        
+
+        
+        cout << curPlyr->name() << "'s turn. Board for " << otherPlyr->name() << ":" << endl;
+        curBord->display(curPlyr->isHuman());
+        
+        Point pointAttack = curPlyr->recommendAttack();
+        bool ValidAttack = curBord->attack(pointAttack, hit, destroyed, id);
+        
+        if(!ValidAttack){
+            cout << curPlyr->name() << " wasted a shot at (" << pointAttack.r << "," << pointAttack.c << ")." << endl;
+        }
+        else {
+            if(hit == true){
+                if(destroyed){
+                    cout << curPlyr->name() << " attacked at (" << pointAttack.r << "," << pointAttack.c << ") and destroyed the " << shipName(id) << ", resulting in:" << endl;
+                }
+                else {
+                    cout << curPlyr->name() << " attacked at (" << pointAttack.r << "," << pointAttack.c << ") and hit something, resulting in:" << endl;
+                }
+            }
+            else if(hit == false){
+                cout << curPlyr->name() << " attacked at (" << pointAttack.r << "," << pointAttack.c << ") and missed, resulting in:" << endl;
+            }
+        }
+        
+        curBord->display(curPlyr->isHuman());
+        
+        waitForEnter();
+        
+        if(curPlyr == p1){
+            curPlyr = p2;
+            otherPlyr = p1;
+            curBord = &b1;
+        }
+        else {
+            curPlyr = p1;
+            otherPlyr = p2;
+            curBord = &b2;
+        }
+        
+    }
+    
+    
+    
+    
     return nullptr;  // This compiles but may not be correct
 }
 
