@@ -20,10 +20,7 @@ class BoardImpl
     bool isShipChar(char chr) const; // check if a character is a current ship character
 
   private:
-    char m_board [MAXROWS][MAXCOLS];
-    bool m_blocked[MAXROWS][MAXCOLS];
-      // TODO:  Decide what private members you need.  Here's one that's likely
-      //        to be useful:
+    char m_board[MAXROWS][MAXCOLS];
     const Game& m_game;
 };
 
@@ -51,7 +48,7 @@ void BoardImpl::block()
         for (int c = 0; c < m_game.cols(); c++)
             if (randInt(2) == 0)
             {
-                m_blocked[r][c] = true;
+                m_board[r][c] = '#';
             }
 }
 
@@ -60,7 +57,9 @@ void BoardImpl::unblock()
     for (int r = 0; r < m_game.rows(); r++)
         for (int c = 0; c < m_game.cols(); c++)
         {
-            m_blocked[r][c] = false;
+            if(m_board[r][c] == '#'){
+                m_board[r][c] = '.';
+            }
         }
 }
 
@@ -78,24 +77,28 @@ bool BoardImpl::placeShip(Point topOrLeft, int shipId, Direction dir)
     
     switch (dir) {
         case 0: // horizontal case
-            if(topOrLeft.c + m_game.shipLength(shipId) >= m_game.cols()) return false; // check if ship fits horizontally
+            if(topOrLeft.c + m_game.shipLength(shipId) > m_game.cols()) return false; // check if ship fits horizontally
             
-            for(int c = topOrLeft.c; c < m_game.shipLength(shipId); c++){
-                if(m_blocked[topOrLeft.r][c] || m_board[topOrLeft.r][c] != '.') return false; // check if position is blocked or already has ship
-                else {
-                    m_board[topOrLeft.r][c] = m_game.shipSymbol(shipId); // add ship to board
-                }
+            for(int c = 0; c < m_game.shipLength(shipId); c++){
+                if(m_board[topOrLeft.r][topOrLeft.c + c] != '.') return false; // check if position is blocked or already has ship
             }
+            
+            for(int c = 0; c < m_game.shipLength(shipId); c++){
+                    m_board[topOrLeft.r][topOrLeft.c + c] = m_game.shipSymbol(shipId); // add ship to board
+            }
+            
             break;
         case 1: // vertical case
-            if(topOrLeft.r + m_game.shipLength(shipId) >= m_game.rows()) return false; // check if ship fits vertically
+            if(topOrLeft.r + m_game.shipLength(shipId) > m_game.rows()) return false; // check if ship fits vertically
             
-            for(int r = topOrLeft.r; r < m_game.shipLength(shipId); r++){
-                if(m_blocked[r][topOrLeft.c] || m_board[r][topOrLeft.c] != '.') return false; // check if position is blocked or already has ship
-                else {
-                    m_board[r][topOrLeft.c] = m_game.shipSymbol(shipId); // add ship to board
-                }
+            for(int r = 0; r < m_game.shipLength(shipId); r++){
+                if(m_board[topOrLeft.r + r][topOrLeft.c] != '.') return false; // check if position is blocked or already has ship
             }
+            
+            for(int r = 0; r < m_game.shipLength(shipId); r++){
+                m_board[topOrLeft.r + r][topOrLeft.c] = m_game.shipSymbol(shipId); // add ship to board
+            }
+            
             break;
         default:
             assert(false); // catch in dir
@@ -164,44 +167,45 @@ void BoardImpl::display(bool shotsOnly) const
 
 bool BoardImpl::attack(Point p, bool& shotHit, bool& shipDestroyed, int& shipId)
 {
+    // reset values
+    shotHit = false;
+    shipDestroyed = false;
+    
     if(!m_game.isValid(p)) return false; // check if attack point is invalid
     
-    char attacked = m_board[p.r][p.c];
+    if(m_board[p.r][p.c] == 'o' || m_board[p.r][p.c] == 'X') return false; // check if attack is called on previously attacked spot
     
-    if(attacked == 'o' || attacked == 'X') return false; // check if attack is called on previously attacked spot
-    
-    if(isShipChar(attacked)){
+    if(isShipChar(m_board[p.r][p.c])){
+        
+        shotHit = true;
         
         for (int i = 0; i < m_game.nShips(); i++) { // find which ship was attacked
-            if(attacked == m_game.shipSymbol(i)){
+            if(m_board[p.r][p.c] == m_game.shipSymbol(i)){
                 shipId = i;
             }
         }
         
-        //assert(m_game.shipSymbol(shipId) == attacked);
+        m_board[p.r][p.c] = 'X';
         
-        bool shipFound = false;
+        bool destroyed = true;
         
         for (int r = 0; r < m_game.rows(); r++){ // check if ship is destroyed
             for (int c = 0; c < m_game.cols(); c++){
-                if (attacked == m_game.shipSymbol(shipId))
+                if (m_board[r][c] == m_game.shipSymbol(shipId))
                 {
-                    shipFound = true;
+                    destroyed = false;
+                    break;
                 }
             }
+            if(!destroyed) break;
         }
         
-        if(shipFound) shipDestroyed = false;
-        else shipDestroyed = true;
+        shipDestroyed = destroyed;
         
-        m_board[p.r][p.c] = 'X';
-        shotHit = true;
     }
     
-    else if(attacked == '.'){
+    else if(m_board[p.r][p.c] == '.'){
         m_board[p.r][p.c] = 'o';
-        shotHit = false;
-        shipDestroyed = false;
     }
     
     return true;
