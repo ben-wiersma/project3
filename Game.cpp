@@ -108,6 +108,7 @@ Player* GameImpl::play(Player* p1, Player* p2, Board& b1, Board& b2, bool should
     Player* curPlyr = p1;
     Player* otherPlyr = p2;
     Board* curBord = &b2;
+    Board* otherBord = &b1;
     
     while (!b1.allShipsDestroyed() && !b2.allShipsDestroyed()) {
         
@@ -122,6 +123,8 @@ Player* GameImpl::play(Player* p1, Player* p2, Board& b1, Board& b2, bool should
         
         Point pointAttack = curPlyr->recommendAttack();
         bool ValidAttack = curBord->attack(pointAttack, hit, destroyed, id);
+        
+        curPlyr->recordAttackResult(pointAttack, ValidAttack, hit, destroyed, id);
         
         if(!ValidAttack){
             cout << curPlyr->name() << " wasted a shot at (" << pointAttack.r << "," << pointAttack.c << ")." << endl;
@@ -138,29 +141,34 @@ Player* GameImpl::play(Player* p1, Player* p2, Board& b1, Board& b2, bool should
             else if(hit == false){
                 cout << curPlyr->name() << " attacked at (" << pointAttack.r << "," << pointAttack.c << ") and missed, resulting in:" << endl;
             }
+            curBord->display(curPlyr->isHuman());
         }
         
-        curBord->display(curPlyr->isHuman());
         
-        waitForEnter();
+        if(shouldPause) waitForEnter();
         
         if(curPlyr == p1){
             curPlyr = p2;
             otherPlyr = p1;
             curBord = &b1;
+            otherBord = &b2;
         }
         else {
             curPlyr = p1;
             otherPlyr = p2;
             curBord = &b2;
+            otherBord = &b1;
         }
         
     }
     
     
     
+    cout << otherPlyr->name() << " wins!" << endl;
     
-    return nullptr;  // This compiles but may not be correct
+    if(curPlyr->isHuman()) curBord->display(false);
+    
+    return otherPlyr;  // This compiles but may not be correct
 }
 
 //******************** Game functions *******************************

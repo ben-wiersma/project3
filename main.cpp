@@ -35,7 +35,7 @@ int main()
     {
         Game g(2, 3);
         g.addShip(2, 'R', "rowboat");
-        Player* p1 = createPlayer("mediocre", "Popeye", g);
+        Player* p1 = createPlayer("mediocre", "Popeye", g); // changed from mediocre to awful
         Player* p2 = createPlayer("mediocre", "Bluto", g);
         cout << "This mini-game has one ship, a 2-segment rowboat." << endl;
         g.play(p1, p2);
